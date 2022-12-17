@@ -1,0 +1,67 @@
+---
+Resources:
+  DockerComposeInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: us-east-1a
+      ImageId: ami-0b5eea76982371e91
+      InstanceType: t2.micro
+      UserData: 
+        Fn::Base64:
+          | 
+          #!/bin/bash
+          yum update -y
+
+          # Install Docker
+          amazon-linux-extras install docker -y
+          service docker start
+          systemctl enable docker
+          usermod -a -G docker ec2-user
+          chmod 666 /var/run/docker.sock
+
+          # Install Docker Compose
+          curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+
+          # Mount Drive
+          mkdir /data
+          mkfs -t xfs /dev/xvdh
+          mount /dev/xvdh /data
+
+      SecurityGroups:
+        - !Ref SSHSecurityGroup
+        - !Ref HTTPSecurityGroup
+
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 22
+        ToPort: 22
+        IpProtocol: tcp
+
+  HTTPSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Enable standard web access
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 80
+          ToPort: 80
+          IpProtocol: tcp
+
+  ExternalVolume:
+    Type: AWS::EC2::Volume
+    Properties: 
+      AvailabilityZone: us-east-1a
+      Size: 4
+      VolumeType: gp2
+
+  MountPoint:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      InstanceId: !Ref DockerComposeInstance
+      VolumeId: !Ref ExternalVolume
+      Device: /dev/xvdh
