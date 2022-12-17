@@ -1,9 +1,15 @@
 ---
+Parameters:
+
+  AvailabilityZone:
+    Type: String
+    Default: us-east-1a
+
 Resources:
   DockerComposeInstance:
     Type: AWS::EC2::Instance
     Properties:
-      AvailabilityZone: us-east-1a
+      AvailabilityZone: !Ref AvailabilityZone
       ImageId: ami-0b5eea76982371e91
       InstanceType: t2.micro
       UserData: 
@@ -27,6 +33,15 @@ Resources:
           mkdir /data
           mkfs -t xfs /dev/xvdh
           mount /dev/xvdh /data
+
+          # Install git in your EC2 instance
+          yum install git -y
+
+          # Git clone
+          cd ~
+          git clone https://github.com/kobbikobb/guessthename.git
+          cd guessthename
+          docker-compose --file docker-compose-explicit.yaml up
 
       SecurityGroups:
         - !Ref SSHSecurityGroup
@@ -55,7 +70,7 @@ Resources:
   ExternalVolume:
     Type: AWS::EC2::Volume
     Properties: 
-      AvailabilityZone: us-east-1a
+      AvailabilityZone: !Ref AvailabilityZone
       Size: 4
       VolumeType: gp2
 
@@ -65,3 +80,8 @@ Resources:
       InstanceId: !Ref DockerComposeInstance
       VolumeId: !Ref ExternalVolume
       Device: /dev/xvdh
+
+  ElasticIp:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref DockerComposeInstance
