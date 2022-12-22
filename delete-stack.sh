@@ -1,1 +1,1 @@
-aws cloudformation delete-stack --stack-name ec2-docker-compose --profile kobbikobb --region us-east-1
+aws cloudformation delete-stack --stack-name ec2-docker-compose --region us-east-1

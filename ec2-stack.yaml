@@ -4,13 +4,16 @@ Parameters:
   AvailabilityZone:
     Type: String
     Default: us-east-1a
+  AmazonLinux2AMI:
+    Type: String
+    Default: ami-0b5eea76982371e91
 
 Resources:
   DockerComposeInstance:
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: !Ref AvailabilityZone
-      ImageId: ami-0b5eea76982371e91
+      ImageId: !Ref AmazonLinux2AMI
       InstanceType: t2.micro
       UserData: 
         Fn::Base64:
@@ -37,7 +40,7 @@ Resources:
           # Install git in your EC2 instance
           yum install git -y
 
-          # Git clone
+          # Run an application with docker-compose
           cd ~
           git clone https://github.com/kobbikobb/guessthename.git
           cd guessthename

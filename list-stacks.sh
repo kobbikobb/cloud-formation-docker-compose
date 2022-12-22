@@ -1,1 +1,1 @@
-aws cloudformation list-stacks --profile kobbikobb --region us-east-1
+aws cloudformation list-stacks --region us-east-1
