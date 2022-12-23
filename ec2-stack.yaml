@@ -40,7 +40,7 @@ Resources:
           # Install git in your EC2 instance
           yum install git -y
 
-          # Run an application with docker-compose
+          # Clone and run a sample application
           cd ~
           git clone https://github.com/kobbikobb/guessthename.git
           cd guessthename

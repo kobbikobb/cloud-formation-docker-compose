@@ -1,9 +1,9 @@
 # Introduction
 
 This repository contains scripts to create:
-- One EC2 with Docker and Docker-Compose
+- One EC2 with Docker, Docker-Compose and a Sample application
 - Security Groups
-- Mounted Volume for Mongo
+- Mounted Volume for MongoDb
 - Elastic IP
 
 The scripts will create resources in: us-east-1
@@ -41,3 +41,6 @@ export AWS_PROFILE=user1
 
 ## Make a sh file executable
 sudo chmod +x filename.bin
+
+## List all volumes on a machine
+lsblk
